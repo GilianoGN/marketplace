@@ -56,7 +56,8 @@ services:
       retries: 5
 
   ticketing-database:
-    image: postgres:18.3
+    image: postgres:17-alpine
+    container_name: marketplace-ticketing-database-1
     environment:
       POSTGRES_DB: ticketing
       POSTGRES_USER: app
@@ -64,9 +65,9 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - ticketing_data:/var/lib/postgresql
+      - ticketing_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app id ticketing"]
+      test: ["CMD-SHELL", "pg_isready -U app -d ticketing"]
       interval: 10s
       timeout: 5s
       retries: 5

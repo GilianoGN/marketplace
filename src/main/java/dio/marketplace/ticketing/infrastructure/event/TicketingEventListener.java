@@ -9,15 +9,19 @@ import org.springframework.stereotype.Component;
 import dio.marketplace.common.infrastruture.event.dto.CustomerCreated;
 import dio.marketplace.common.infrastruture.event.dto.EventUpdated;
 import dio.marketplace.ticketing.application.CreateCustomerUseCase;
+import dio.marketplace.ticketing.application.CreateEventUseCase;
 
 @Component
 public class TicketingEventListener {
     private static final Logger logger = LoggerFactory.getLogger(TicketingEventListener.class);
 
     private final CreateCustomerUseCase createCustomerUseCase;
+    private final CreateEventUseCase createEventUseCase;
 
-    public TicketingEventListener(CreateCustomerUseCase createCustomerUseCase) {
+
+    public TicketingEventListener(CreateCustomerUseCase createCustomerUseCase, CreateEventUseCase createEventUseCase) {
         this.createCustomerUseCase = createCustomerUseCase;
+        this.createEventUseCase = createEventUseCase;
     }
 
     @EventListener
@@ -31,5 +35,6 @@ public class TicketingEventListener {
     @Async
     public void handle(EventUpdated event) {
         logger.info("EventUpdated received {}", event);
+        createEventUseCase.execute(event);
     }
 }

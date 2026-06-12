@@ -20,7 +20,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration(proxyBeanMethods = false)
 @EnableJpaRepositories(
-    basePackages = "dio.marketplace.ticketing.infrastructure.repository",
+    basePackages = "dio.marketplace.ticketing.infrastructure.persistence.repository",
     entityManagerFactoryRef = "ticketingEntityManagerFactory",
     transactionManagerRef = "ticketingTransactionManager")
 public class TicketingConfiguration {
