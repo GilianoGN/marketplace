@@ -7,7 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import dio.marketplace.ticketing.infrastructure.persistence.entity.CustomerEntity;
 
-@RepositoryRestResource(exported = false)
+@RepositoryRestResource(exported = false, path = "_customer")
 public interface CustomerCrudRepository extends CrudRepository<CustomerEntity, UUID> {
     
 }
