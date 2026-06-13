@@ -8,4 +8,5 @@ import dio.marketplace.ticketing.infrastructure.persistence.entity.EventEntity;
 
 @RepositoryRestResource(exported = false, path = "_event")
 public interface EventCrudRepository extends CrudRepository<EventEntity, UUID> {
+    boolean existsByCorrelationIdAndSectors_Seats_CorrelationId(UUID eventId, UUID seatId);
 }

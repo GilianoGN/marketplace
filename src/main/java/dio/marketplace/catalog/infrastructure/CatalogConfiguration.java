@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
 import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
@@ -17,12 +18,15 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.zaxxer.hikari.HikariDataSource;
+
 
 @Configuration(proxyBeanMethods = false)
 @EnableJpaRepositories(
@@ -78,6 +82,14 @@ public class CatalogConfiguration {
     public PlatformTransactionManager catalogTransactionManager(
         @Qualifier("catalog") LocalContainerEntityManagerFactoryBean emf) {
         return new JpaTransactionManager(emf.getObject());
+    }
+
+    @Primary
+    @Bean
+    public RedisConnectionFactory catalogRedisConnectionFactory(
+            @Value("${catalog.redis.host}") String hostName,
+            @Value("${catalog.redis.port}") int port) {
+        return new JedisConnectionFactory(new RedisStandaloneConfiguration(hostName, port));
     }
 
     @Primary

@@ -72,6 +72,16 @@ services:
       timeout: 5s
       retries: 5
 
+  ticketing-locking:
+    image: redis:8.6
+    ports:
+      - "6381:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
 volumes:
   registration_data:
