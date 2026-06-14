@@ -22,7 +22,7 @@ public class TicketingSectorEntity {
     @Id
     private UUID id;
 
-    private String correlationId;
+    private UUID correlationId;
 
     private BigDecimal price;
 

@@ -1,8 +1,10 @@
 package dio.marketplace.ticketing.infrastructure.persistence.repository;
 
-import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
+import java.time.Duration;
 
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import dio.marketplace.ticketing.domain.TicketingCustomerId;
@@ -14,18 +16,17 @@ import dio.marketplace.ticketing.domain.TicketingSeatId;
 import dio.marketplace.ticketing.domain.TicketingSector;
 import dio.marketplace.ticketing.infrastructure.persistence.entity.TicketingEventEntity;
 import dio.marketplace.ticketing.infrastructure.persistence.entity.TicketingSeatEntity;
-import dio.marketplace.ticketing.infrastructure.persistence.entity.TicketingSeatLockEntity;
 import dio.marketplace.ticketing.infrastructure.persistence.entity.TicketingSectorEntity;
 
 @Repository
 public class Ticketing implements TicketingEventRepository{
     private final TicketingEventCrudRepository eventCrudRepository;
-    private final TicketingRedisSeatLockRepository redisSeatLockRepository;
+    private final StringRedisTemplate redisTemplate;
 
-
-    public Ticketing(TicketingEventCrudRepository eventCrudRepository, TicketingRedisSeatLockRepository redisSeatLockRepository) {
+    public Ticketing(TicketingEventCrudRepository eventCrudRepository,
+            @Qualifier("ticketingStringRedisTemplate") StringRedisTemplate redisTemplate) {
         this.eventCrudRepository = eventCrudRepository;
-        this.redisSeatLockRepository = redisSeatLockRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class Ticketing implements TicketingEventRepository{
                 
                 return new TicketingSectorEntity(
                     domainSector.getId(),
-                    domainSector.getCorrelationId().id(),
+                    UUID.fromString(domainSector.getCorrelationId().id()),
                     domainSector.getPrice(),
                     seats
                 );
@@ -66,15 +67,13 @@ public class Ticketing implements TicketingEventRepository{
 
     @Override
     public boolean tryLockSeat(TicketingEventId eventId, TicketingSeatId seatId, TicketingCustomerId customerId) {
-        String lockId = eventId.id().toString() + ":" + seatId.id().toString();
-        
-        if (redisSeatLockRepository.existsById(lockId)) {
-            return false;
-        }
 
-        var lock = new TicketingSeatLockEntity(lockId, customerId.id().toString(), Instant.now());
-        redisSeatLockRepository.save(lock);
+        String lockKey = "seat_lock:" + eventId.id().toString() + ":" + seatId.id().toString();
 
-        return true;
+        String lockValue = customerId.id().toString();
+
+        Boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, lockValue, Duration.ofSeconds(30));
+
+        return Boolean.TRUE.equals(locked);
     }
 }

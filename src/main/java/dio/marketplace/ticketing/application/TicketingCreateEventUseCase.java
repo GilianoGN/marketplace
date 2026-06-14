@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import dio.marketplace.common.infrastruture.event.dto.CommonEventUpdated;
 import dio.marketplace.ticketing.domain.TicketingEvent;
 import dio.marketplace.ticketing.domain.TicketingEventRepository;
 import dio.marketplace.ticketing.domain.TicketingSeat;
 import dio.marketplace.ticketing.domain.TicketingSector;
-
 @Service
 public class TicketingCreateEventUseCase {
     private final TicketingEventRepository eventRepository;
@@ -20,6 +20,7 @@ public class TicketingCreateEventUseCase {
         this.eventRepository = eventRepository;
     }
 
+    @Transactional("ticketingTransactionManager")
     public void execute(CommonEventUpdated event) {
         Map<TicketingSector, List<TicketingSeat>> seats = event.sectors().stream()
             .collect(Collectors.toMap(
