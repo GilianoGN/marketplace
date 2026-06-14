@@ -1,15 +1,13 @@
 package dio.marketplace.catalog.infrastructure;
 
-import java.util.LinkedHashMap;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceProperties;
-import org.springframework.boot.jpa.EntityManagerFactoryBuilder;
-import org.springframework.boot.jpa.autoconfigure.JpaProperties;
+import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -22,11 +20,9 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.zaxxer.hikari.HikariDataSource;
-
 
 @Configuration(proxyBeanMethods = false)
 @EnableJpaRepositories(
@@ -61,6 +57,18 @@ public class CatalogConfiguration {
     @Qualifier("catalog")
     @Bean
     public LocalContainerEntityManagerFactoryBean catalogEntityManagerFactory(
+            EntityManagerFactoryBuilder builder, 
+            @Qualifier("catalog") DataSource dataSource,
+            @Qualifier("catalog") JpaProperties jpaProperties) {
+
+        return builder
+                .dataSource(dataSource)
+                .packages("dio.marketplace.catalog")
+                .persistenceUnit("catalog")
+                .properties(jpaProperties.getProperties())
+                .build();
+    }
+/*    public LocalContainerEntityManagerFactoryBean catalogEntityManagerFactory(
                 @Qualifier("catalog") DataSource dataSource,
                 @Qualifier("catalog") JpaProperties jpaProperties) {
         var builder = new EntityManagerFactoryBuilder(
@@ -75,7 +83,7 @@ public class CatalogConfiguration {
             .persistenceUnit("catalog")
             .properties(jpaProperties.getProperties())
             .build();
-    }
+    }*/
 
     @Qualifier("catalog")
     @Bean

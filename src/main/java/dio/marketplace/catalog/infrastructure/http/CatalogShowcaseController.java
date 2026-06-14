@@ -10,7 +10,7 @@ import dio.marketplace.catalog.application.CatalogBrowseShowcaseUseCase;
 import dio.marketplace.catalog.application.dto.CatalogEventOutput;
 
 @RestController
-@RequestMapping("/showcase")
+@RequestMapping("/catalog/showcase")
 public class CatalogShowcaseController {
     private final CatalogBrowseShowcaseUseCase browseShowcaseUseCase;
 

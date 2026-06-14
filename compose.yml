@@ -40,10 +40,11 @@ services:
     volumes:
       - metadata_data:/data/db
     healthcheck:
-      test: ["CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh localhost:27017/test -- quiet"]
+      test: ["CMD-SHELL", "mongosh --quiet 127.0.0.1:27017/test --eval 'db.runCommand({ping:1}).ok' || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
   
   catalog-cache:
     image: redis:8.6
@@ -75,13 +76,13 @@ services:
   ticketing-locking:
     image: redis:8.6
     ports:
-      - "6381:6379"
+      - "6382:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 10s
       retries: 5
-
+      start_period: 20s
 
 volumes:
   registration_data:
