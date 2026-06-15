@@ -68,22 +68,6 @@ public class CatalogConfiguration {
                 .properties(jpaProperties.getProperties())
                 .build();
     }
-/*    public LocalContainerEntityManagerFactoryBean catalogEntityManagerFactory(
-                @Qualifier("catalog") DataSource dataSource,
-                @Qualifier("catalog") JpaProperties jpaProperties) {
-        var builder = new EntityManagerFactoryBuilder(
-            new HibernateJpaVendorAdapter(),
-            x -> new LinkedHashMap<>(jpaProperties.getProperties()),
-            null
-        );
-
-        return builder
-            .dataSource(dataSource)
-            .packages("dio.marketplace.catalog")
-            .persistenceUnit("catalog")
-            .properties(jpaProperties.getProperties())
-            .build();
-    }*/
 
     @Qualifier("catalog")
     @Bean

@@ -13,6 +13,7 @@ import dio.marketplace.ticketing.application.TicketingSelectSeatUseCase;
 import dio.marketplace.ticketing.domain.TicketingCustomerId;
 import dio.marketplace.ticketing.domain.TicketingEventId;
 import dio.marketplace.ticketing.infrastructure.http.request.TicketingSeatSelectionRequest;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @RestController
 @RequestMapping("/ticketing/events/{eventId}/seats")
@@ -25,8 +26,15 @@ public class TicketingSeatSelectionController {
 
     @PostMapping("/select")
     @ResponseStatus(HttpStatus.CREATED)
-    public void selectSeat(@PathVariable String eventId, @RequestBody TicketingSeatSelectionRequest request, @RequestHeader("X-CUSTOMER-ID") String customerId) {
+    @CircuitBreaker(name = "ticketingService", fallbackMethod = "fallbackSelectSeat")
+    public void selectSeat( @PathVariable String eventId, 
+                            @RequestBody TicketingSeatSelectionRequest request, 
+                            @RequestHeader("X-CUSTOMER-ID") String customerId) {
         selectSeatUseCase.execute(new TicketingEventId(eventId), request.toInput(), new TicketingCustomerId(customerId));
     }
-    
+
+    public void fallbackSelectSeat(String eventId, TicketingSeatSelectionRequest request, String customerId, Throwable t) {
+
+        throw new RuntimeException("Serviço de bilheteria temporariamente indisponível. Tente novamente mais tarde.");
+    }
 }
