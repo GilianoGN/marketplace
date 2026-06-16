@@ -24,6 +24,7 @@ public class RegistrationJpaCustomerRepository implements RegistrationCustomerRe
         this.publisher = publisher;
     }
 
+    @SuppressWarnings("null")
     @Override
     public RegistrationCustomer save(RegistrationCustomer customer) {
         var entity = mapper(customer);

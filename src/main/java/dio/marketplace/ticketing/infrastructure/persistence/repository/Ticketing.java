@@ -73,6 +73,7 @@ public class Ticketing implements TicketingEventRepository{
 
         String lockValue = customerId.id().toString();
 
+        @SuppressWarnings("null")
         Boolean locked = redisTemplate.opsForValue().setIfAbsent(lockKey, lockValue, Duration.ofSeconds(30));
 
         return Boolean.TRUE.equals(locked);

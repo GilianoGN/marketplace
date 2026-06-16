@@ -18,6 +18,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.lang.NonNull;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -69,6 +70,7 @@ public class CatalogConfiguration {
                 .build();
     }
 
+    @SuppressWarnings("null")
     @Qualifier("catalog")
     @Bean
     public PlatformTransactionManager catalogTransactionManager(
@@ -79,14 +81,14 @@ public class CatalogConfiguration {
     @Primary
     @Bean
     public RedisConnectionFactory catalogRedisConnectionFactory(
-            @Value("${catalog.redis.host}") String hostName,
+            @Value("${catalog.redis.host}") @NonNull String hostName,
             @Value("${catalog.redis.port}") int port) {
         return new JedisConnectionFactory(new RedisStandaloneConfiguration(hostName, port));
     }
 
     @Primary
     @Bean
-    public RedisCacheManager catalogCacheManager(RedisConnectionFactory connectionFactory) {
+    public RedisCacheManager catalogCacheManager(@NonNull RedisConnectionFactory connectionFactory) {
         return RedisCacheManager.builder(connectionFactory).build();
     }
 }

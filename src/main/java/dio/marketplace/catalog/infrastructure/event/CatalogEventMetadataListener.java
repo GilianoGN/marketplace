@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterDeleteEvent;
 import org.springframework.data.mongodb.core.mapping.event.AfterSaveEvent;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import dio.marketplace.catalog.infrastructure.entity.CatalogEventMetadataEntity;
@@ -22,14 +23,15 @@ public class CatalogEventMetadataListener extends AbstractMongoEventListener<Cat
     }
 
 
+    @SuppressWarnings("null")
     @Override
-    public void onAfterSave(AfterSaveEvent<CatalogEventMetadataEntity> event){
+    public void onAfterSave(@NonNull AfterSaveEvent<CatalogEventMetadataEntity> event){
         logger.info("Event metadata saved via onAfterSave {}", event.getDocument());
         this.publisher.publishEvent(CommonEventUpdated.from(event.getSource()));
     }
 
     @Override
-    public void onAfterDelete(AfterDeleteEvent<CatalogEventMetadataEntity> event) {
+    public void onAfterDelete(@NonNull AfterDeleteEvent<CatalogEventMetadataEntity> event) {
         logger.info("Event metadata deleted via onAfterDelete {}", event.getDocument());
     }
 }

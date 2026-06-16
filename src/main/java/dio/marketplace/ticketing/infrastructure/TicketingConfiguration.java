@@ -3,7 +3,6 @@ package dio.marketplace.ticketing.infrastructure;
 //import java.util.LinkedHashMap;
 import javax.sql.DataSource;
 
-import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -22,6 +21,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
+import org.springframework.lang.NonNull;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 //import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -36,7 +36,7 @@ import com.zaxxer.hikari.HikariDataSource;
     transactionManagerRef = "ticketingTransactionManager")
 @EnableRedisRepositories(
     basePackages = "dio.marketplace.ticketing.infrastructure.persistence.repository",
-    redisTemplateRef = "ticketingRedisTamplate")
+    redisTemplateRef = "ticketingRedisTemplate")
 public class TicketingConfiguration {
     
     @Qualifier("ticketing")
@@ -76,22 +76,8 @@ public class TicketingConfiguration {
             .properties(jpaProperties.getProperties()) // Importante manter se houver propriedades extras
             .build();
     }
-/*    public LocalContainerEntityManagerFactoryBean ticketingEntityManagerFactory(
-                @Qualifier("ticketing") DataSource dataSource,
-                @Qualifier("ticketing") JpaProperties jpaProperties) {
-        var builder = new EntityManagerFactoryBuilder(
-            new HibernateJpaVendorAdapter(),
-            x -> new LinkedHashMap<>(jpaProperties.getProperties()),
-            null
-        );
 
-        return builder
-            .dataSource(dataSource)
-            .packages("dio.marketplace.ticketing")
-            .persistenceUnit("ticketing")
-            .build();
-    } */
-
+    @SuppressWarnings("null")
     @Qualifier("ticketing")
     @Bean
     public PlatformTransactionManager ticketingTransactionManager(
@@ -102,14 +88,14 @@ public class TicketingConfiguration {
     @Qualifier("ticketing")
     @Bean(defaultCandidate = false)
     public RedisConnectionFactory ticketingRedisConnectionFactory(
-            @Value("${ticketing.redis.host}") String hostName,
+            @Value("${ticketing.redis.host}") @NonNull String hostName,
             @Value("${ticketing.redis.port}") int port) {
         return new JedisConnectionFactory(new RedisStandaloneConfiguration(hostName, port));
     }
 
     @Qualifier("ticketing")
     @Bean(defaultCandidate = false)
-    public RedisTemplate<?, ?> ticketingRedisTamplate(@Qualifier("ticketing") RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<?, ?> ticketingRedisTemplate(@Qualifier("ticketing") RedisConnectionFactory connectionFactory) {
         RedisTemplate<byte[], byte[]> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return template;
@@ -117,15 +103,7 @@ public class TicketingConfiguration {
 
     @Qualifier("ticketing")
     @Bean(name = "ticketingStringRedisTemplate", defaultCandidate = false)
-    public StringRedisTemplate ticketingStringRedisTemplate(@Qualifier("ticketing") RedisConnectionFactory connectionFactory) {
+    public StringRedisTemplate ticketingStringRedisTemplate(@Qualifier("ticketing") @NonNull RedisConnectionFactory connectionFactory) {
         return new StringRedisTemplate(connectionFactory);
     }
-
-/*     @Bean
-    public GroupedOpenApi ticketingApi() {
-        return GroupedOpenApi.builder()
-            .group("Ticketing-group")
-            .pathsToMatch("dio.marketplace.ticketing.infrastructure.api")
-            .build();
-    }*/
 }

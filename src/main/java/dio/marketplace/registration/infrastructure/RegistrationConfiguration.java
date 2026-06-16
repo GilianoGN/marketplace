@@ -58,6 +58,7 @@ public class RegistrationConfiguration {
                 .build();
     }
 
+    @SuppressWarnings("null")
     @Primary
     @Bean
     public PlatformTransactionManager registrationTransactionManager(

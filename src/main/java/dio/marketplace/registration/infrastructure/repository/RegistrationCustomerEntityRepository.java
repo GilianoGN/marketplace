@@ -8,6 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.lang.NonNull;
 
 import dio.marketplace.registration.infrastructure.entity.RegistrationCustomerEntity;
 import dio.marketplace.registration.infrastructure.entity.projection.RegistrationCustomerExcerpt;
@@ -19,6 +20,6 @@ public interface RegistrationCustomerEntityRepository extends PagingAndSortingRe
 
     @Override
     @RestResource(exported = false)
-    void deleteById(UUID id);
+    void deleteById(@NonNull UUID id);
 
 }
